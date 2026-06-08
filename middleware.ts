@@ -10,7 +10,8 @@ export const config = {
   matcher: [
     /*
      * Run on all routes except static assets and images.
-     * Auth route protection will be added in a later phase.
+     * Redirects unauthenticated users from /dashboard and
+     * authenticated users away from /login and /signup.
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],

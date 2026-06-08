@@ -1,11 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { isAuthRoute, isProtectedRoute, ROUTES } from "@/lib/constants";
 import { getSupabaseEnv } from "@/lib/env";
 
 /**
- * Refreshes the Supabase auth session on each matched request.
- * Phase 1: session refresh only — route protection is added in the auth phase.
+ * Refreshes the Supabase auth session and enforces route-level access control.
  */
 export async function updateSession(request: NextRequest) {
   const env = getSupabaseEnv();
@@ -35,8 +35,23 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Must run immediately after createServerClient to keep sessions in sync.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+
+  if (!user && isProtectedRoute(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = ROUTES.login;
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isAuthRoute(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = ROUTES.dashboard;
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }

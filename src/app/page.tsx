@@ -1,63 +1,67 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+import { ROUTES } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/server";
+import { buttonClassName } from "@/components/ui/button";
+
+export default async function HomePage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex min-h-full flex-col bg-zinc-50 dark:bg-zinc-950">
+      <header className="border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mx-auto flex max-w-5xl items-center justify-between">
+          <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            Bookmark Manager
+          </span>
+
+          <div className="flex items-center gap-3">
+            {user ? (
+              <Link href={ROUTES.dashboard} className={buttonClassName()}>
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href={ROUTES.login} className={buttonClassName("ghost")}>
+                  Sign in
+                </Link>
+                <Link href={ROUTES.signup} className={buttonClassName()}>
+                  Sign up
+                </Link>
+              </>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-6 py-16">
+        <div className="max-w-2xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Save, organize, and share your bookmarks
+          </h1>
+          <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
+            A simple bookmark manager with public profiles and private collections.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            {user ? (
+              <Link href={ROUTES.dashboard} className={buttonClassName()}>
+                Go to dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href={ROUTES.signup} className={buttonClassName()}>
+                  Get started
+                </Link>
+                <Link href={ROUTES.login} className={buttonClassName("secondary")}>
+                  Sign in
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </main>
     </div>
