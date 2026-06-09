@@ -75,6 +75,26 @@ export async function createProfile(
   return data;
 }
 
+export async function getProfileByHandle(
+  supabase: SupabaseClient,
+  handle: string,
+): Promise<Profile | null> {
+  const { normalizeHandle } = await import("@/lib/validations/profile");
+  const normalized = normalizeHandle(handle);
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, handle, display_name, created_at, updated_at")
+    .eq("handle", normalized)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
 /** Creates a profile from signup metadata when the user gains a session. */
 export async function ensureProfileFromUser(
   supabase: SupabaseClient,

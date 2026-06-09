@@ -41,6 +41,24 @@ export async function getBookmarkById(
   return data;
 }
 
+export async function getPublicBookmarksByUserId(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<Bookmark[]> {
+  const { data, error } = await supabase
+    .from("bookmarks")
+    .select(BOOKMARK_SELECT)
+    .eq("user_id", userId)
+    .eq("is_public", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+}
+
 export function mapBookmarkError(message: string): string {
   if (message.includes("bookmarks_title_not_empty")) {
     return "Title is required";
