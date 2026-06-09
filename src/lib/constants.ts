@@ -30,6 +30,13 @@ export const RESERVED_HANDLES = new Set([
   "terms",
 ]);
 
+export const BOOKMARK_LIMITS = {
+  titleMax: 200,
+  descriptionMax: 1000,
+  tagsMax: 20,
+  tagLengthMax: 30,
+} as const;
+
 export function publicProfilePath(handle: string): string {
   return `/${handle}`;
 }
